@@ -1,0 +1,2 @@
+pbr>=1.8
+python-ironicclient>=1.11.0
