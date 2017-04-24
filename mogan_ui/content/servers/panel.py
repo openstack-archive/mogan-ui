@@ -21,16 +21,16 @@ from openstack_dashboard.api import base
 from openstack_dashboard.dashboards.project import dashboard
 
 
-class Instances(horizon.Panel):
-    name = _("Instances")
-    slug = 'instances'
+class Servers(horizon.Panel):
+    name = _("Servers")
+    slug = 'servers'
 
     def allowed(self, context):
         request = context['request']
         if not base.is_service_enabled(request, 'baremetal_compute'):
             return False
         else:
-            return super(Instances, self).allowed(context)
+            return super(Servers, self).allowed(context)
 
     def nav(self, context):
         request = context['request']
@@ -39,4 +39,4 @@ class Instances(horizon.Panel):
         else:
             return True
 
-dashboard.Project.register(Instances)
+dashboard.Project.register(Servers)

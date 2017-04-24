@@ -14,10 +14,10 @@
 # limitations under the License.
 
 from django.conf.urls import url
+from django.utils.translation import ugettext_lazy as _
+from horizon.browsers import views
 
-import mogan_ui.api.rest_api  # noqa
-from mogan_ui.content.baremetals import views
-
+title = _("Servers")
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
+    url('', views.AngularIndexView.as_view(title=title), name='index'),
 ]

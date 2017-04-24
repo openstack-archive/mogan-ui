@@ -1,6 +1,3 @@
-# Copyright 2017 Huawei Technologies Co.,LTD.
-# All Rights Reserved.
-#
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -13,8 +10,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from django.views import generic
+# The slug of the panel to be added to HORIZON_CONFIG. Required.
+PANEL = 'servers'
+# The slug of the panel group the PANEL is associated with.
+PANEL_GROUP = 'baremetal_compute'
+# The slug of the dashboard the PANEL associated with. Required.
+PANEL_DASHBOARD = 'project'
 
-
-class IndexView(generic.TemplateView):
-    template_name = 'project/baremetals/index.html'
+# Python panel class of the PANEL to be added.
+ADD_PANEL = 'mogan_ui.content.baremetals.panel.Servers'
