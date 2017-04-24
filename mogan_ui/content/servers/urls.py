@@ -16,7 +16,7 @@
 from django.conf.urls import url
 
 import mogan_ui.api.rest_api  # noqa
-from mogan_ui.content.baremetals import views
+from mogan_ui.content.servers import views
 
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
