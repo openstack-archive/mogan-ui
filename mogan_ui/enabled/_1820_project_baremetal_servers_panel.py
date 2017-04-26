@@ -18,4 +18,4 @@ PANEL_GROUP = 'baremetal_compute'
 PANEL_DASHBOARD = 'project'
 
 # Python panel class of the PANEL to be added.
-ADD_PANEL = 'mogan_ui.content.baremetals.panel.Servers'
+ADD_PANEL = 'mogan_ui.content.servers.panel.Servers'
