@@ -54,6 +54,17 @@ STATUS_DISPLAY_CHOICES = (
                                   u"Maintenance")),
 )
 
+SERVER_FILTER_CHOICES = (
+    ('name', _("Server Name"), True),
+    ('status', _("Status ="), True),
+    ('availability_zone', _("Availability Zone"), True),
+)
+
+
+class ServersFilterAction(tables.FilterAction):
+    filter_type = "server"
+    filter_choices = SERVER_FILTER_CHOICES
+
 
 class ServersTable(tables.DataTable):
     STATUS_CHOICES = (
@@ -95,3 +106,4 @@ class ServersTable(tables.DataTable):
         verbose_name = _("Servers")
         status_columns = ["status"]
         row_class = UpdateRow
+        table_actions = (ServersFilterAction,)
