@@ -12,7 +12,7 @@
 
 from django.views import generic
 
-from mogan_ui.api import client
+from mogan_ui.api import mogan
 
 from openstack_dashboard.api.rest import urls
 from openstack_dashboard.api.rest import utils as rest_utils
@@ -30,5 +30,5 @@ class Servers(generic.View):
         :param request: HTTP request.
         :return: servers.
         """
-        servers = client.server_list(request)
+        servers = mogan.server_list(request)
         return {'servers': [s.to_dict() for s in servers]}

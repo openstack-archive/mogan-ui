@@ -13,9 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.conf.urls import url
-from mogan_ui.content.servers import views
+from django.utils.translation import ugettext_lazy as _
 
-urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
-]
+from horizon import tables
+
+
+class ServersTable(tables.DataTable):
+
+    name = tables.WrappingColumn(
+        "name",
+        verbose_name=_("Name"))
+    status = tables.Column("status",
+                           verbose_name=_("Status"))
+
+    def get_object_id(self, obj):
+        return obj.uuid
+
+    class Meta(object):
+        name = "servers"
+        verbose_name = _("Servers")
