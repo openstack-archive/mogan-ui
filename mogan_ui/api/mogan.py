@@ -43,3 +43,14 @@ def server_list(request):
     """
     server_manager = moganclient(request).server
     return server_manager.list(detailed=True, all_projects=False)
+
+
+def server_get(request, server_id):
+    """Retrieve a list of servers.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    :return: Server object.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.get(server_id)

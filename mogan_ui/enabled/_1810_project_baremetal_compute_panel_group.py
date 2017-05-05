@@ -20,9 +20,3 @@ PANEL_GROUP_NAME = _('Bare Metal Compute')
 PANEL_GROUP_DASHBOARD = 'project'
 
 ADD_INSTALLED_APPS = ['mogan_ui']
-
-ADD_ANGULAR_MODULES = [
-    'horizon.dashboard.baremetal_compute'
-]
-
-AUTO_DISCOVER_STATIC_FILES = True
