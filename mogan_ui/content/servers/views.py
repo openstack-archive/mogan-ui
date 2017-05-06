@@ -13,17 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from mogan_ui.api import mogan
-from mogan_ui.content.servers.tables import ServersTable
+from mogan_ui.content.servers import tables as project_tables
+from mogan_ui.content.servers import tabs as project_tabs
 
 from horizon import exceptions
 from horizon import tables
+from horizon import tabs
+from horizon.utils import memoized
 
 
 class IndexView(tables.DataTableView):
-    table_class = ServersTable
+    table_class = project_tables.ServersTable
     template_name = 'project/servers/index.html'
     page_title = _("Servers")
 
@@ -35,3 +39,48 @@ class IndexView(tables.DataTableView):
             msg = _('Unable to retrieve servers.')
             exceptions.handle(self.request, msg)
         return servers
+
+
+class DetailView(tabs.TabView):
+    tab_group_class = project_tabs.ServerDetailTabs
+    template_name = 'horizon/common/_detail.html'
+    redirect_url = 'horizon:project:servers:index'
+    page_title = "{{ server.name|default:server.uuid }}"
+    image_url = 'horizon:project:images:images:detail'
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        server = self.get_data()
+        if server.image_uuid:
+            server.image_url = reverse(self.image_url,
+                                       args=[server.image_uuid])
+        context["server"] = server
+        context["url"] = reverse(self.redirect_url)
+        context["actions"] = self._get_actions(server)
+        return context
+
+    def _get_actions(self, server):
+        table = project_tables.ServersTable(self.request)
+        return table.render_row_actions(server)
+
+    @memoized.memoized_method
+    def get_data(self):
+        server_id = self.kwargs['server_id']
+
+        try:
+            server = mogan.server_get(self.request, server_id)
+        except Exception:
+            redirect = reverse(self.redirect_url)
+            exceptions.handle(self.request,
+                              _('Unable to retrieve details for '
+                                'server "%s".') % server_id,
+                              redirect=redirect)
+            # Not all exception types handled above will result in a redirect.
+            # Need to raise here just in case.
+            raise exceptions.Http302(redirect)
+
+        return server
+
+    def get_tabs(self, request, *args, **kwargs):
+        server = self.get_data()
+        return self.tab_group_class(request, server=server, **kwargs)

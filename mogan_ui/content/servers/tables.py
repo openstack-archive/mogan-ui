@@ -76,6 +76,7 @@ class ServersTable(tables.DataTable):
     )
     name = tables.WrappingColumn(
         "name",
+        link="horizon:project:servers:detail",
         verbose_name=_("Server Name"))
     image = tables.Column("image_uuid",
                           verbose_name=_("Image"))
