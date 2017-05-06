@@ -16,11 +16,44 @@
 from django.template.defaultfilters import title
 from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext_lazy
 
 from mogan_ui.api import mogan
 
 from horizon import tables
 from horizon.utils import filters
+
+
+class DeleteServer(tables.DeleteAction):
+    help_text = _("Deleted servers are not recoverable.")
+
+    @staticmethod
+    def action_present(count):
+        return ungettext_lazy(
+            u"Delete Server",
+            u"Delete Servers",
+            count
+        )
+
+    @staticmethod
+    def action_past(count):
+        return ungettext_lazy(
+            u"Scheduled deletion of Server",
+            u"Scheduled deletion of Servers",
+            count
+        )
+
+    def allowed(self, request, server=None):
+        """Allow delete action if server is in error state or not currently
+        being deleted.
+        """
+        error_state = False
+        if server:
+            error_state = (server.status == 'error')
+        return error_state or not (server.status.lower() == "deleting")
+
+    def action(self, request, obj_id):
+        mogan.server_delete(request, obj_id)
 
 
 class UpdateRow(tables.Row):
@@ -106,4 +139,5 @@ class ServersTable(tables.DataTable):
         verbose_name = _("Servers")
         status_columns = ["status"]
         row_class = UpdateRow
-        table_actions = (ServersFilterAction,)
+        table_actions = (DeleteServer, ServersFilterAction)
+        row_actions = (DeleteServer,)

@@ -46,7 +46,7 @@ def server_list(request):
 
 
 def server_get(request, server_id):
-    """Retrieve a list of servers.
+    """Get a server.
 
     :param request: HTTP request.
     :param server_id: The uuid of the server.
@@ -54,3 +54,13 @@ def server_get(request, server_id):
     """
     server_manager = moganclient(request).server
     return server_manager.get(server_id)
+
+
+def server_delete(request, server_id):
+    """Delete a server.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.delete(server_id)
