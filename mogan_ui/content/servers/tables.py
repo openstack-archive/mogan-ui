@@ -24,6 +24,27 @@ from horizon import tables
 from horizon.utils import filters
 
 
+class LaunchLink(tables.LinkAction):
+    name = "launch"
+    verbose_name = _("Launch Server")
+    url = "horizon:project:servers:launch"
+    classes = ("ajax-modal", "btn-launch")
+    icon = "cloud-upload"
+    ajax = True
+
+    def __init__(self, attrs=None, **kwargs):
+        kwargs['preempt'] = True
+        super(LaunchLink, self).__init__(attrs, **kwargs)
+
+    def allowed(self, request, datum):
+        # TODO(zhenguo): Add quotas check
+        return True  # The action should always be displayed
+
+    def single(self, table, request, object_id=None):
+        self.allowed(request, None)
+        return HttpResponse(self.render(is_table_action=True))
+
+
 class DeleteServer(tables.DeleteAction):
     help_text = _("Deleted servers are not recoverable.")
 
@@ -142,5 +163,5 @@ class ServersTable(tables.DataTable):
         verbose_name = _("Servers")
         status_columns = ["status"]
         row_class = UpdateRow
-        table_actions = (DeleteServer, ServersFilterAction)
+        table_actions = (LaunchLink, DeleteServer, ServersFilterAction)
         row_actions = (DeleteServer,)

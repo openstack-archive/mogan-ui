@@ -19,11 +19,13 @@ from django.utils.translation import ugettext_lazy as _
 from mogan_ui.api import mogan
 from mogan_ui.content.servers import tables as project_tables
 from mogan_ui.content.servers import tabs as project_tabs
+from mogan_ui.content.servers import workflows as project_workflows
 
 from horizon import exceptions
 from horizon import tables
 from horizon import tabs
 from horizon.utils import memoized
+from horizon import workflows
 
 
 class IndexView(tables.DataTableView):
@@ -39,6 +41,16 @@ class IndexView(tables.DataTableView):
             msg = _('Unable to retrieve servers.')
             exceptions.handle(self.request, msg)
         return servers
+
+
+class LaunchServerView(workflows.WorkflowView):
+    workflow_class = project_workflows.LaunchServer
+
+    def get_initial(self):
+        initial = super(LaunchServerView, self).get_initial()
+        initial['project_id'] = self.request.user.tenant_id
+        initial['user_id'] = self.request.user.id
+        return initial
 
 
 class DetailView(tabs.TabView):
