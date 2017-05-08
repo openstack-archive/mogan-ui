@@ -64,3 +64,54 @@ def server_delete(request, server_id):
     """
     server_manager = moganclient(request).server
     return server_manager.delete(server_id)
+
+
+def keypair_list(request):
+    """Retrieve a list of keypairs.
+
+    :param request: HTTP request.
+    :return: A list of keypairs.
+    """
+    keypair_manager = moganclient(request).keypair
+    return keypair_manager.list()
+
+
+def keypair_create(request, name):
+    """Create a keypair.
+
+    :param request: HTTP request.
+    :param name: The name of the keypair.
+    """
+    keypair_manager = moganclient(request).keypair
+    return keypair_manager.create(name=name)
+
+
+def keypair_import(request, name, public_key):
+    """Import a keypair.
+
+    :param request: HTTP request.
+    :param name: The name of the keypair.
+    :param public_key: The public key used to generate keypair.
+    """
+    keypair_manager = moganclient(request).keypair
+    return keypair_manager.create(name=name, public_key=public_key)
+
+
+def keypair_get(request, name):
+    """Get a keypair.
+
+    :param request: HTTP request.
+    :param name: The name of the keypair.
+    """
+    keypair_manager = moganclient(request).keypair
+    return keypair_manager.get(name)
+
+
+def keypair_delete(request, name):
+    """Delete a keypair.
+
+    :param request: HTTP request.
+    :param name: The name of the keypair.
+    """
+    keypair_manager = moganclient(request).keypair
+    return keypair_manager.delete(name)
