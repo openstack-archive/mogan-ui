@@ -19,6 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext_lazy
 
 from mogan_ui.api import mogan
+from mogan_ui import exceptions
 
 from horizon import tables
 from horizon.utils import filters
@@ -62,8 +63,11 @@ class UpdateRow(tables.Row):
     ajax = True
 
     def get_data(self, request, server_id):
-        server = mogan.server_get(request, server_id)
-        return server
+        try:
+            server = mogan.server_get(request, server_id)
+            return server
+        except exceptions.ResourceNotFound:
+            raise exceptions.NOT_FOUND
 
 
 STATUS_DISPLAY_CHOICES = (
