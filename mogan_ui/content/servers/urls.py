@@ -18,6 +18,7 @@ from mogan_ui.content.servers import views
 
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^launch$', views.LaunchServerView.as_view(), name='launch'),
     url(r'^(?P<server_id>[^/]+)/$',
         views.DetailView.as_view(), name='detail'),
 ]

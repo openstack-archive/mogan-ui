@@ -45,6 +45,22 @@ def server_list(request):
     return server_manager.list(detailed=True, all_projects=False)
 
 
+def server_create(request, name, image, flavor, nics, availability_zone,
+                  user_data, key_name, server_count):
+    """Create a server.
+
+    :param request: HTTP request.
+    :return: Server object.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.create(
+        name=name, image_uuid=image, flavor_uuid=flavor,
+        networks=nics, availability_zone=availability_zone,
+        userdata=user_data, key_name=key_name, min_count=server_count,
+        max_count=server_count,
+    )
+
+
 def server_get(request, server_id):
     """Get a server.
 
@@ -115,3 +131,23 @@ def keypair_delete(request, name):
     """
     keypair_manager = moganclient(request).keypair
     return keypair_manager.delete(name)
+
+
+def availability_zone_list(request):
+    """Retrieve a list of availability zones.
+
+    :param request: HTTP request.
+    :return: A list of availability zones.
+    """
+    az_manager = moganclient(request).availability_zone
+    return az_manager.list()
+
+
+def flavor_list(request):
+    """Retrieve a list of flavors.
+
+    :param request: HTTP request.
+    :return: A list of flavors.
+    """
+    flavor_manager = moganclient(request).flavor
+    return flavor_manager.list()
