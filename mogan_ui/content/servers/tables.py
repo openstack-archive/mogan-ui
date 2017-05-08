@@ -48,10 +48,11 @@ class DeleteServer(tables.DeleteAction):
 
         if server is in error state or not currently being deleted.
         """
-        error_state = False
+        error_state = deleting = False
         if server:
             error_state = (server.status == 'error')
-        return error_state or not (server.status.lower() == "deleting")
+            deleting = (server.status.lower() == "deleting")
+        return error_state or not deleting
 
     def action(self, request, obj_id):
         mogan.server_delete(request, obj_id)
