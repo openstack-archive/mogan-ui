@@ -12,6 +12,8 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from mogan_ui import exceptions
+
 # The slug of the panel group to be added to HORIZON_CONFIG. Required.
 PANEL_GROUP = 'baremetal_compute'
 # The display name of the PANEL_GROUP. Required.
@@ -20,3 +22,8 @@ PANEL_GROUP_NAME = _('Bare Metal Compute')
 PANEL_GROUP_DASHBOARD = 'project'
 
 ADD_INSTALLED_APPS = ['mogan_ui']
+ADD_EXCEPTIONS = {
+    'recoverable': exceptions.RECOVERABLE,
+    'not_found': exceptions.NOT_FOUND,
+    'unauthorized': exceptions.UNAUTHORIZED,
+}
