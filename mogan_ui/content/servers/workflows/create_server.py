@@ -365,6 +365,8 @@ class LaunchServer(workflows.Workflow):
             nics = None
 
         avail_zone = context.get('availability_zone', None)
+        if not avail_zone:
+            avail_zone = None
 
         try:
             mogan.server_create(request,
