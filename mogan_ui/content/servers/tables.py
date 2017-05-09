@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from django.http import HttpResponse
+from django import template
 from django.template.defaultfilters import title
 from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
@@ -92,6 +93,27 @@ class UpdateRow(tables.Row):
             raise exceptions.NOT_FOUND
 
 
+def get_ips(server):
+    template_name = 'project/servers/_server_ips.html'
+    ip_groups = {}
+
+    for nic in server.nics:
+        net_id = nic['network_id']
+        ip_groups[net_id] = {}
+        ip_groups[net_id]["floating"] = []
+        ip_groups[net_id]["non_floating"] = []
+        if nic.get('floating_ip'):
+            ip_groups[net_id]["floating"].append(nic.floating_ip)
+
+        for ip in nic['fixed_ips']:
+            ip_groups[net_id]["non_floating"].append(ip['ip_address'])
+
+    context = {
+        "ip_groups": ip_groups,
+    }
+    return template.loader.render_to_string(template_name, context)
+
+
 STATUS_DISPLAY_CHOICES = (
     ("active", pgettext_lazy("Current status of a Server", u"Active")),
     ("stopped", pgettext_lazy("Current status of a Server", u"Stopped")),
@@ -141,6 +163,9 @@ class ServersTable(tables.DataTable):
         verbose_name=_("Server Name"))
     image = tables.Column("image_uuid",
                           verbose_name=_("Image"))
+    ip = tables.Column(get_ips,
+                       verbose_name=_("IP Address"),
+                       attrs={'data-type': "ip"})
     flavor = tables.Column("flavor_uuid",
                            sortable=False,
                            verbose_name=_("Flavor"))
