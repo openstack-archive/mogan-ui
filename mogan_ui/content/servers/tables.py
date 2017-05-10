@@ -16,6 +16,7 @@
 from django.http import HttpResponse
 from django import template
 from django.template.defaultfilters import title
+from django.utils.translation import npgettext_lazy
 from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext_lazy
@@ -80,6 +81,66 @@ class DeleteServer(tables.DeleteAction):
 
     def action(self, request, obj_id):
         mogan.server_delete(request, obj_id)
+
+
+class StartServer(tables.BatchAction):
+    name = "start"
+    classes = ('btn-confirm',)
+
+    @staticmethod
+    def action_present(count):
+        return ungettext_lazy(
+            u"Start Server",
+            u"Start Servers",
+            count
+        )
+
+    @staticmethod
+    def action_past(count):
+        return ungettext_lazy(
+            u"Started Server",
+            u"Started Servers",
+            count
+        )
+
+    def allowed(self, request, server):
+        return ((server is None) or
+                (server.status in ("stopped",)))
+
+    def action(self, request, obj_id):
+        mogan.server_start(request, obj_id)
+
+
+class StopServer(tables.BatchAction):
+    name = "stop"
+    help_text = _("The server(s) will be shut off.")
+    action_type = "danger"
+
+    @staticmethod
+    def action_present(count):
+        return npgettext_lazy(
+            "Action to perform (the server is currently running)",
+            u"Shut Off Server",
+            u"Shut Off Servers",
+            count
+        )
+
+    @staticmethod
+    def action_past(count):
+        return npgettext_lazy(
+            "Past action (the server is currently already Shut Off)",
+            u"Shut Off Server",
+            u"Shut Off Servers",
+            count
+        )
+
+    def allowed(self, request, server):
+        return ((server is None)
+                or (server.power_state in ("power on",))
+                    and (server.status != "deleting"))
+
+    def action(self, request, obj_id):
+        mogan.server_stop(request, obj_id)
 
 
 class UpdateRow(tables.Row):
@@ -193,5 +254,6 @@ class ServersTable(tables.DataTable):
         verbose_name = _("Servers")
         status_columns = ["status"]
         row_class = UpdateRow
+        table_actions_menu = (StartServer, StopServer)
         table_actions = (LaunchLink, DeleteServer, ServersFilterAction)
-        row_actions = (DeleteServer,)
+        row_actions = (StartServer, StopServer, DeleteServer,)
