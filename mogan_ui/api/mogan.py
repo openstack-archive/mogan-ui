@@ -82,6 +82,26 @@ def server_delete(request, server_id):
     return server_manager.delete(server_id)
 
 
+def server_start(request, server_id):
+    """Start a server.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.set_power_state(server_id, 'on')
+
+
+def server_stop(request, server_id):
+    """Stop a server.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.set_power_state(server_id, 'off')
+
+
 def keypair_list(request):
     """Retrieve a list of keypairs.
 
