@@ -143,6 +143,70 @@ class StopServer(tables.BatchAction):
         mogan.server_stop(request, obj_id)
 
 
+class RebootServer(tables.BatchAction):
+    name = "reboot"
+    classes = ('btn-reboot',)
+    help_text = _("Restarted servers will lose any data"
+                  " not saved in persistent storage.")
+    action_type = "danger"
+
+    @staticmethod
+    def action_present(count):
+        return ungettext_lazy(
+            u"Hard Reboot Server",
+            u"Hard Reboot Servers",
+            count
+        )
+
+    @staticmethod
+    def action_past(count):
+        return ungettext_lazy(
+            u"Hard Rebooted Server",
+            u"Hard Rebooted Servers",
+            count
+        )
+
+    def allowed(self, request, server=None):
+        if server is not None:
+            return ((server.status.lower() == 'active'
+                     or server.status.lower() == 'stopped')
+                    and not (server.status.lower() == 'deleting'))
+        else:
+            return True
+
+    def action(self, request, obj_id):
+        mogan.server_reboot(request, obj_id, soft_reboot=False)
+
+
+class SoftRebootServer(RebootServer):
+    name = "soft_reboot"
+
+    @staticmethod
+    def action_present(count):
+        return ungettext_lazy(
+            u"Soft Reboot Server",
+            u"Soft Reboot Servers",
+            count
+        )
+
+    @staticmethod
+    def action_past(count):
+        return ungettext_lazy(
+            u"Soft Rebooted Server",
+            u"Soft Rebooted Servers",
+            count
+        )
+
+    def action(self, request, obj_id):
+        mogan.server_reboot(request, obj_id, soft_reboot=True)
+
+    def allowed(self, request, server=None):
+        if server is not None:
+            return server.status.lower() == 'active'
+        else:
+            return True
+
+
 class UpdateRow(tables.Row):
     ajax = True
 
@@ -254,6 +318,7 @@ class ServersTable(tables.DataTable):
         verbose_name = _("Servers")
         status_columns = ["status"]
         row_class = UpdateRow
-        table_actions_menu = (StartServer, StopServer)
+        table_actions_menu = (StartServer, StopServer, SoftRebootServer)
         table_actions = (LaunchLink, DeleteServer, ServersFilterAction)
-        row_actions = (StartServer, StopServer, DeleteServer,)
+        row_actions = (StartServer, StopServer, SoftRebootServer,
+                       RebootServer, DeleteServer)

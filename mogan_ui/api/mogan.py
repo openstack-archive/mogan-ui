@@ -102,6 +102,20 @@ def server_stop(request, server_id):
     return server_manager.set_power_state(server_id, 'off')
 
 
+def server_reboot(request, server_id, soft_reboot=False):
+    """Reboot a server.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    """
+    server_manager = moganclient(request).server
+    if soft_reboot:
+        target = 'soft_reboot'
+    else:
+        target = 'reboot'
+    return server_manager.set_power_state(server_id, target)
+
+
 def keypair_list(request):
     """Retrieve a list of keypairs.
 
