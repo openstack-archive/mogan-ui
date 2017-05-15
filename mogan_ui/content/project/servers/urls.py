@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from django.conf.urls import url
-from mogan_ui.content.servers import views
+from mogan_ui.content.project.servers import views
 
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),

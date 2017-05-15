@@ -27,8 +27,8 @@ from horizon import tables
 from horizon.utils import memoized
 from horizon import views
 from mogan_ui.api import mogan
-from mogan_ui.content.key_pairs import forms as key_pairs_forms
-from mogan_ui.content.key_pairs import tables as key_pairs_tables
+from mogan_ui.content.project.key_pairs import forms as key_pairs_forms
+from mogan_ui.content.project.key_pairs import tables as key_pairs_tables
 
 
 class IndexView(tables.DataTableView):
