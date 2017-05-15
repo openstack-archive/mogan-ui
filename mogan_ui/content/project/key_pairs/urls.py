@@ -17,7 +17,7 @@
 #    under the License.
 
 from django.conf.urls import url
-from mogan_ui.content.key_pairs import views
+from mogan_ui.content.project.key_pairs import views
 
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),

@@ -10,7 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from mogan_ui.content.servers.workflows.create_server import LaunchServer
+from mogan_ui.content.project.servers.workflows.create_server \
+    import LaunchServer
 
 __all__ = [
     'LaunchServer',

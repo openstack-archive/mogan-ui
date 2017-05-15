@@ -17,9 +17,9 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from mogan_ui.api import mogan
-from mogan_ui.content.servers import tables as project_tables
-from mogan_ui.content.servers import tabs as project_tabs
-from mogan_ui.content.servers import workflows as project_workflows
+from mogan_ui.content.project.servers import tables as project_tables
+from mogan_ui.content.project.servers import tabs as project_tabs
+from mogan_ui.content.project.servers import workflows as project_workflows
 
 from horizon import exceptions
 from horizon import tables
