@@ -25,6 +25,7 @@ from mogan_ui.api import mogan
 from mogan_ui import exceptions
 
 from horizon import tables
+from horizon.templatetags import sizeformat
 from horizon.utils import filters
 
 
@@ -239,6 +240,40 @@ def get_ips(server):
     return template.loader.render_to_string(template_name, context)
 
 
+def get_flavor(server):
+    if hasattr(server, "full_flavor"):
+        template_name = 'project/servers/_server_flavor.html'
+        full_flavor = server.full_flavor
+        cpus = "%s %s cores" % (full_flavor.cpus['model'],
+                                full_flavor.cpus['cores'])
+        size_ram = sizeformat.mb_float_format(full_flavor.memory['size_mb'])
+        ram = "%s %s" % (size_ram, full_flavor.memory['type'])
+        disks = ""
+        for disk in full_flavor.disks:
+            if disks != "":
+                disks += "<br>"
+            size_disk = sizeformat.diskgbformat(disk['size_gb'])
+            disk = "%s %s" % (disk['type'], size_disk)
+            disks += disk
+        nics = ""
+        for nic in full_flavor.nics:
+            if nics != "":
+                nics += "<br>"
+            nic = "%s %s" % (nic['type'], nic['speed'])
+            nics += nic
+        context = {
+            "name": server.full_flavor.name,
+            "id": server.uuid,
+            "disks": disks,
+            "nics": nics,
+            "cpus": cpus,
+            "ram": ram,
+            "flavor_id": server.full_flavor.uuid
+        }
+        return template.loader.render_to_string(template_name, context)
+    return _("Not available")
+
+
 STATUS_DISPLAY_CHOICES = (
     ("active", pgettext_lazy("Current status of a Server", u"Active")),
     ("stopped", pgettext_lazy("Current status of a Server", u"Stopped")),
@@ -291,7 +326,7 @@ class ServersTable(tables.DataTable):
     ip = tables.Column(get_ips,
                        verbose_name=_("IP Address"),
                        attrs={'data-type': "ip"})
-    flavor = tables.Column("flavor_uuid",
+    flavor = tables.Column(get_flavor,
                            sortable=False,
                            verbose_name=_("Flavor"))
     status = tables.Column("status",

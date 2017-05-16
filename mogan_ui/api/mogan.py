@@ -42,8 +42,11 @@ def server_list(request):
     :return: A list of servers.
     """
     server_manager = moganclient(request).server
-    return server_manager.list(detailed=True, all_projects=False)
-
+    servers = server_manager.list(detailed=True, all_projects=False)
+    for server in servers:
+        full_flavor = flavor_get(request, server.flavor_uuid)
+        server.full_flavor = full_flavor
+    return servers
 
 def server_create(request, name, image, flavor, nics, availability_zone,
                   user_data, key_name, server_count):
@@ -69,7 +72,10 @@ def server_get(request, server_id):
     :return: Server object.
     """
     server_manager = moganclient(request).server
-    return server_manager.get(server_id)
+    server = server_manager.get(server_id)
+    full_flavor = flavor_get(request, server.flavor_uuid)
+    server.full_flavor = full_flavor
+    return server
 
 
 def server_delete(request, server_id):
@@ -185,3 +191,14 @@ def flavor_list(request):
     """
     flavor_manager = moganclient(request).flavor
     return flavor_manager.list()
+
+
+def flavor_get(request, flavor_id):
+    """Get a flavor.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the flavor.
+    :return: Flavor object.
+    """
+    flavor_manager = moganclient(request).flavor
+    return flavor_manager.get(flavor_id)
