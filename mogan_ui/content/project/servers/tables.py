@@ -239,6 +239,22 @@ def get_ips(server):
     return template.loader.render_to_string(template_name, context)
 
 
+def get_flavor(server):
+    if hasattr(server, "full_flavor"):
+        template_name = 'project/servers/_server_flavor.html'
+        context = {
+            "name": server.full_flavor.name,
+            "id": server.uuid,
+            "disks": server.full_flavor.disks,
+            "nics": server.full_flavor.nics,
+            "cpus": server.full_flavor.cpus,
+            "ram": server.full_flavor.memory,
+            "flavor_id": server.full_flavor.uuid
+        }
+        return template.loader.render_to_string(template_name, context)
+    return _("Not available")
+
+
 STATUS_DISPLAY_CHOICES = (
     ("active", pgettext_lazy("Current status of a Server", u"Active")),
     ("stopped", pgettext_lazy("Current status of a Server", u"Stopped")),
@@ -291,7 +307,7 @@ class ServersTable(tables.DataTable):
     ip = tables.Column(get_ips,
                        verbose_name=_("IP Address"),
                        attrs={'data-type': "ip"})
-    flavor = tables.Column("flavor_uuid",
+    flavor = tables.Column(get_flavor,
                            sortable=False,
                            verbose_name=_("Flavor"))
     status = tables.Column("status",
