@@ -16,6 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import logging
 
 from oslo_utils import units
@@ -27,6 +28,7 @@ from django.views.decorators.debug import sensitive_variables
 
 from horizon import exceptions
 from horizon import forms
+from horizon.templatetags import sizeformat
 from horizon.utils import functions
 from horizon import workflows
 
@@ -86,6 +88,8 @@ class SetServerDetailsAction(workflows.Action):
 
     class Meta(object):
         name = _("Details")
+        help_text_template = ("project/servers/"
+                              "_launch_details_help.html")
 
     def __init__(self, request, context, *args, **kwargs):
         self._init_images_cache()
@@ -118,8 +122,6 @@ class SetServerDetailsAction(workflows.Action):
         flavor_list.sort()
         if not flavor_list:
             flavor_list.insert(0, ("", _("No flavors found")))
-        elif len(flavor_list) > 1:
-            flavor_list.insert(0, ("", _("Select Flavor")))
         return flavor_list
 
     def populate_availability_zone_choices(self, request, context):
@@ -159,6 +161,44 @@ class SetServerDetailsAction(workflows.Action):
         else:
             choices.insert(0, ("", _("No images available")))
         return choices
+
+    def get_help_text(self, extra_context=None):
+        extra = {} if extra_context is None else dict(extra_context)
+        try:
+            flavors = mogan.flavor_list(self.request)
+            flavors_dict = {}
+            for flavor in flavors:
+                cpus = "%s %s cores" % (flavor.cpus['model'],
+                                        flavor.cpus['cores'])
+                size_ram = sizeformat.mb_float_format(flavor.memory['size_mb'])
+                ram = "%s %s" % (size_ram, flavor.memory['type'])
+                disks = ""
+                for disk in flavor.disks:
+                    if disks != "":
+                        disks += "<br>"
+                    size_disk = sizeformat.diskgbformat(disk['size_gb'])
+                    disk = "%s %s" % (disk['type'], size_disk)
+                    disks += disk
+                nics = ""
+                for nic in flavor.nics:
+                    if nics != "":
+                        nics += "<br>"
+                    nic = "%s %s" % (nic['type'], nic['speed'])
+                    nics += nic
+
+                flavor_dict = {'name': flavor.name,
+                               'cpus': cpus,
+                               'ram': ram,
+                               'disks': disks,
+                               'nics': nics}
+                flavors_dict[flavor.uuid] = flavor_dict
+
+            extra['flavors'] = json.dumps(flavors_dict)
+
+        except Exception:
+            exceptions.handle(self.request,
+                              _("Unable to retrieve flavor information."))
+        return super(SetServerDetailsAction, self).get_help_text(extra)
 
 
 class SetServerDetails(workflows.Step):
