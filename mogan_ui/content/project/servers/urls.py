@@ -16,9 +16,15 @@
 from django.conf.urls import url
 from mogan_ui.content.project.servers import views
 
+
+SERVERS = r'^(?P<server_id>[^/]+)/%s$'
+
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^launch$', views.LaunchServerView.as_view(), name='launch'),
     url(r'^(?P<server_id>[^/]+)/$',
         views.DetailView.as_view(), name='detail'),
+    url(SERVERS % 'serial', views.SerialConsoleView.as_view(),
+        name='serial'),
+    url(SERVERS % 'console', views.console, name='console'),
 ]

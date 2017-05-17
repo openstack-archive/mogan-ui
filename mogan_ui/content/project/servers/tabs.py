@@ -29,7 +29,36 @@ class OverviewTab(tabs.Tab):
                 "is_superuser": request.user.is_superuser}
 
 
+class ConsoleTab(tabs.Tab):
+    name = _("Console")
+    slug = "console"
+    template_name = "project/servers/_detail_console.html"
+    preload = False
+
+    def get_context_data(self, request):
+        server = self.tab_group.kwargs['server']
+        console_url = None
+        try:
+            console_type, console_url = console.get_console(
+                request, console_type, instance)
+            # For serial console, the url is different from VNC, etc.
+            # because it does not include params for title and token
+            if console_type == "SERIAL":
+                console_url = reverse('horizon:project:servers:serial',
+                                      args=[server.uuid])
+        except exceptions.NotAvailable:
+            exceptions.handle(request, ignore=True, force_log=True)
+
+        return {'console_url': console_url, 'instance_id': instance.id,
+                'console_type': console_type}
+
+    def allowed(self, request):
+        # The ConsoleTab is available if settings.CONSOLE_TYPE is not set at
+        # all, or if it's set to any value other than None or False.
+        return bool(getattr(settings, 'CONSOLE_TYPE', True))
+
+
 class ServerDetailTabs(tabs.DetailTabsGroup):
     slug = "server_details"
-    tabs = (OverviewTab,)
+    tabs = (OverviewTab, ConsoleTab)
     sticky = True

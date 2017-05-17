@@ -96,3 +96,31 @@ class DetailView(tabs.TabView):
     def get_tabs(self, request, *args, **kwargs):
         server = self.get_data()
         return self.tab_group_class(request, server=server, **kwargs)
+
+
+class SerialConsoleView(generic.TemplateView):
+    template_name = 'project/servers/serial_console.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SerialConsoleView, self).get_context_data(**kwargs)
+        context['server_id'] = self.kwargs['server_id']
+        server = None
+        try:
+            server = mogan.server_get(self.request,
+                                      self.kwargs['server_id'])
+        except Exception:
+            context["error_message"] = _(
+                "Cannot find server %s.") % self.kwargs['server_id']
+            # name is unknown, so leave it blank for the window title
+            # in full-screen mode, so only the instance id is shown.
+            context['server_name'] = ''
+            return context
+        context['server_name'] = server.name
+        try:
+            console_url = mogan.console_get(self.request, server.uuid)
+            context["console_url"] = console_url.console['url']
+        except Exception:
+            context["error_message"] = _(
+                "Cannot get console for server %s.") % self.kwargs[
+                'server_id']
+        return context
