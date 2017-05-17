@@ -203,3 +203,13 @@ def flavor_get(request, flavor_id):
     """
     flavor_manager = moganclient(request).flavor
     return flavor_manager.get(flavor_id)
+
+
+def console_get(request, server_id):
+    """Get serial console for a server.
+
+    :param request: HTTP request.
+    :param server_id: The uuid of the server.
+    """
+    server_manager = moganclient(request).server
+    return server_manager.get_serial_console(server_id)

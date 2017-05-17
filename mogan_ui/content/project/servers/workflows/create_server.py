@@ -118,8 +118,6 @@ class SetServerDetailsAction(workflows.Action):
         flavor_list.sort()
         if not flavor_list:
             flavor_list.insert(0, ("", _("No flavors found")))
-        elif len(flavor_list) > 1:
-            flavor_list.insert(0, ("", _("Select Flavor")))
         return flavor_list
 
     def populate_availability_zone_choices(self, request, context):
