@@ -1,0 +1,8 @@
+Code-Review+2: Zhenguo Niu <Niu.ZGlinux@gmail.com>
+Workflow+1: Zhenguo Niu <Niu.ZGlinux@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 17 May 2017 07:34:11 +0000
+Reviewed-on: https://review.openstack.org/465403
+Project: openstack/mogan-ui
+Branch: refs/heads/master
