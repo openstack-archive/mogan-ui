@@ -24,8 +24,8 @@
     $("#bm_flavor_name").text(selected_flavor["name"]);
     $("#bm_flavor_cpus").text(selected_flavor["cpus"]);
     $("#bm_flavor_ram").text(selected_flavor["ram"]);
-    $("#bm_flavor_nics").text(selected_flavor["nics"]);
-    $("#bm_flavor_disks").text(selected_flavor["disks"]);
+    $("#bm_flavor_nics").html(selected_flavor["nics"]);
+    $("#bm_flavor_disks").html(selected_flavor["disks"]);
     
   })
   if (flavor_id) {
