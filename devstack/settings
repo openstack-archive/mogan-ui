@@ -1,5 +1,0 @@
-# settings file for mogan-ui plugin
-enable_service mogan-ui
-
-# set up default directories
-MOGAN_UI_DIR=${MOGAN_UI_DIR:=$DEST/mogan-ui}
